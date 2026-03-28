@@ -1,5 +1,7 @@
 import os
 from config import *
+from google import genai
+from google.genai import types as google_types
 
 def get_file_content(working_directory, file_path):
     try:
@@ -20,3 +22,17 @@ def get_file_content(working_directory, file_path):
 
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+schema_get_file_content = google_types.FunctionDeclaration(
+    name="get_file_content",
+    description="Lists content in a specified file relative to the working directory, providing file path and directory status",
+    parameters=google_types.Schema(
+        type=google_types.Type.OBJECT,
+        properties={
+            "file_path": google_types.Schema(
+                type=google_types.Type.STRING,
+                description="File path to list files from, relative to the working directory",
+            ),
+        },
+    ),
+)

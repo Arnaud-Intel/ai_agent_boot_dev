@@ -1,4 +1,6 @@
 import os
+from google import genai
+from google.genai import types as google_types
 
 def write_file(working_directory, file_path, content):
     try:
@@ -19,3 +21,22 @@ def write_file(working_directory, file_path, content):
 
     except Exception as e:
         print(f"Unexpected error: {e}")
+
+
+schema_write_file = google_types.FunctionDeclaration(
+name="write_file",
+description="Writes a specified content into a specified file path, providing file path, directory status and content",
+parameters=google_types.Schema(
+    type=google_types.Type.OBJECT,
+    properties={
+        "file_path": google_types.Schema(
+            type=google_types.Type.STRING,
+            description="File path to list files from, relative to the working directory",
+        ),
+        "content": google_types.Schema(
+            type=google_types.Type.STRING,
+            description="content to be written into the file",
+        ),
+    },
+),
+)
