@@ -1,10 +1,21 @@
 import os
 import argparse
 from dotenv import load_dotenv
+
 from google import genai
 from google.genai import types as google_types
 from prompts import *
+
 from functions.call_functions import *
+from functions.run_python_file import schema_run_python_file
+from functions.get_file_content import schema_get_file_content
+from functions.get_files_info import schema_get_files_info
+from functions.write_file import schema_write_file
+
+from functions.run_python_file import run_python_file 
+from functions.get_file_content import get_file_content
+from functions.get_files_info import get_files_info
+from functions.write_file import write_file
 
 
 load_dotenv()
@@ -42,6 +53,22 @@ if args.verbose:
 
 if response.function_calls:
     for function_call in response.function_calls:
+        function_call_result = call_function(function_call)
         print(f"Calling function: {function_call.name}({function_call.args})")
 else:
     print(response.text)
+
+# Check the result of your executed function, not the model's response request
+if not function_call_result.parts:
+    raise Exception("Error: No .parts list in our call_function response")
+elif function_call_result.parts[0].function_response is None:
+    raise Exception("Error: .parts[0] function_response is None")
+elif function_call_result.parts[0].function_response.response is None:
+    raise Exception("Error: .parts[0] response is None")
+
+function_result = []
+# Append the part from the result, not from response.function_calls
+function_result.append(function_call_result.parts[0])
+
+if args.verbose:
+    print(f"-> {function_call_result.parts[0].function_response.response}")
